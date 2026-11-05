@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Desktop/">
+    <Project Path="src/Desktop/Ventafacil.Desktop/Ventafacil.Desktop.csproj" />
+    <Project Path="src/Desktop/Ventafacil.Domain/Ventafacil.Domain.csproj" />
+    <Project Path="src/Desktop/Ventafacil.Infrastructure/Ventafacil.Infrastructure.csproj" />
+  </Folder>
+</Solution>
+
