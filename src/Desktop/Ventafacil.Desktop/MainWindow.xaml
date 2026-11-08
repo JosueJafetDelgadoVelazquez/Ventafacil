@@ -47,201 +47,230 @@
             </Border>
         </Grid>
 
-        <Grid x:Name="PointOfSaleView" Visibility="Collapsed" Margin="24">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <Grid x:Name="PointOfSaleView" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="230" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Grid Margin="0,0,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="Punto de venta"
-                               FontSize="28"
-                               FontWeight="Bold"
-                               Foreground="#17324D" />
-                    <TextBlock Text="Busca productos y agrégalos al carrito"
-                               Margin="0,4,0,0"
-                               Foreground="#65758B" />
-                </StackPanel>
-                <Button Grid.Column="1"
-                        x:Name="ConfigurePasswordButton"
-                        Content="Configurar contraseña"
-                        Padding="16,10"
-                        VerticalAlignment="Center"
-                        Click="ConfigurePassword_Click" />
-            </Grid>
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.25*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="0.85*" />
-                </Grid.ColumnDefinitions>
-
-                <Border Grid.Column="0" Padding="20" Background="White" CornerRadius="10">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Productos"
-                                   FontSize="20"
+            <Border Grid.Column="0" Background="#17324D" Padding="20">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="VentaFácil"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="White" />
+                        <TextBlock Text="PUNTO DE VENTA"
+                                   Margin="0,4,0,28"
+                                   FontSize="11"
                                    FontWeight="SemiBold"
-                                   Foreground="#17324D" />
-                        <Grid Grid.Row="1" Margin="0,14,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="ProductSearchBox"
-                                     Height="38"
-                                     Padding="10,6"
-                                     VerticalContentAlignment="Center"
-                                     ToolTip="Nombre, código de barras o categoría"
-                                     KeyDown="ProductSearchBox_KeyDown" />
-                            <Button Grid.Column="1"
-                                    Content="Buscar"
-                                    Margin="8,0,0,0"
-                                    Padding="14,6"
-                                    Click="SearchProducts_Click" />
-                        </Grid>
-                        <Grid Grid.Row="2">
-                            <ListView x:Name="ProductsList"
-                                      BorderThickness="0"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Padding="10,8" BorderBrush="#E7EBF0" BorderThickness="0,0,0,1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Name}"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="#17324D" />
-                                                    <TextBlock Text="{Binding Barcode}"
-                                                               Margin="0,3,0,0"
-                                                               FontSize="12"
-                                                               Foreground="#65758B" />
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1"
-                                                            Orientation="Horizontal"
-                                                            VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Price, StringFormat={}{0:C2}}"
-                                                               Margin="0,0,12,0"
-                                                               VerticalAlignment="Center"
-                                                               FontWeight="SemiBold" />
-                                                    <Button Content="Agregar"
-                                                            Padding="12,6"
-                                                            Tag="{Binding}"
-                                                            Click="AddToCart_Click" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                            <TextBlock x:Name="ProductsEmptyText"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Foreground="#65758B"
-                                       TextWrapping="Wrap"
-                                       TextAlignment="Center"
-                                       IsHitTestVisible="False"
-                                       Visibility="Collapsed" />
-                        </Grid>
-                    </Grid>
-                </Border>
+                                   Foreground="#AFC4D8" />
+                        <Button Content="Punto de venta"
+                                HorizontalContentAlignment="Left"
+                                Padding="12,10"
+                                Background="#245779"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                BorderThickness="0" />
+                    </StackPanel>
+                    <Button x:Name="ConfigurePasswordButton"
+                            DockPanel.Dock="Bottom"
+                            Content="Configurar contraseña"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,10"
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="#49647D"
+                            Click="ConfigurePassword_Click" />
+                </DockPanel>
+            </Border>
 
-                <Border Grid.Column="2" Padding="20" Background="White" CornerRadius="10">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+            <Grid Grid.Column="1" Margin="28,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Punto de venta"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   Foreground="#17324D" />
+                        <TextBlock Text="Busca productos y agrégalos al carrito"
+                                   Margin="0,4,0,0"
+                                   Foreground="#65758B" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.25*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="0.85*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Padding="20" Background="White" CornerRadius="10">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Carrito"
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Productos"
                                        FontSize="20"
                                        FontWeight="SemiBold"
                                        Foreground="#17324D" />
-                            <Button Grid.Column="1"
-                                    Content="Vaciar"
-                                    Padding="10,5"
-                                    Click="ClearCart_Click" />
-                        </Grid>
-                        <ListView x:Name="CartList"
-                                  Grid.Row="1"
-                                  Margin="0,12,0,12"
-                                  BorderThickness="0">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,6">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="#17324D" />
-                                            <TextBlock Text="{Binding Quantity, StringFormat=Cantidad: {0}}"
-                                                       Margin="0,3,0,0"
-                                                       FontSize="12"
-                                                       Foreground="#65758B" />
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1"
-                                                    Orientation="Horizontal"
-                                                    VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding LineTotal, StringFormat={}{0:C2}}"
-                                                       Margin="0,0,10,0"
-                                                       VerticalAlignment="Center" />
-                                            <Button Content="−"
-                                                    Width="30"
-                                                    Height="30"
-                                                    Tag="{Binding}"
-                                                    Click="RemoveFromCart_Click" />
-                                        </StackPanel>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <StackPanel Grid.Row="2">
-                            <Separator />
-                            <Grid Margin="0,14,0,0">
+                            <Grid Grid.Row="1" Margin="0,14,0,12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Total"
-                                           FontSize="18"
+                                <TextBox x:Name="ProductSearchBox"
+                                         Height="38"
+                                         Padding="10,6"
+                                         VerticalContentAlignment="Center"
+                                         ToolTip="Nombre, código de barras o categoría"
+                                         KeyDown="ProductSearchBox_KeyDown" />
+                                <Button Grid.Column="1"
+                                        Content="Buscar"
+                                        Margin="8,0,0,0"
+                                        Padding="14,6"
+                                        Click="SearchProducts_Click" />
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <ListView x:Name="ProductsList"
+                                          BorderThickness="0"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="10,8" BorderBrush="#E7EBF0" BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="#17324D" />
+                                                        <TextBlock Text="{Binding Barcode}"
+                                                                   Margin="0,3,0,0"
+                                                                   FontSize="12"
+                                                                   Foreground="#65758B" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="1"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Price, StringFormat={}{0:C2}}"
+                                                                   Margin="0,0,12,0"
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="SemiBold" />
+                                                        <Button Content="Agregar"
+                                                                Padding="12,6"
+                                                                Tag="{Binding}"
+                                                                Click="AddToCart_Click" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <TextBlock x:Name="ProductsEmptyText"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="#65758B"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           IsHitTestVisible="False"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="2" Padding="20" Background="White" CornerRadius="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Carrito"
+                                           FontSize="20"
                                            FontWeight="SemiBold"
                                            Foreground="#17324D" />
-                                <TextBlock x:Name="CartTotalText"
-                                           Grid.Column="1"
-                                           Text="$0.00"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="#1769AA" />
+                                <Button Grid.Column="1"
+                                        Content="Vaciar"
+                                        Padding="10,5"
+                                        Click="ClearCart_Click" />
                             </Grid>
-                            <TextBlock x:Name="CartStatusText"
-                                       Margin="0,10,0,0"
-                                       Foreground="#65758B"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                            <ListView x:Name="CartList"
+                                      Grid.Row="1"
+                                      Margin="0,12,0,12"
+                                      BorderThickness="0">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#17324D" />
+                                                <TextBlock Text="{Binding Quantity, StringFormat=Cantidad: {0}}"
+                                                           Margin="0,3,0,0"
+                                                           FontSize="12"
+                                                           Foreground="#65758B" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding LineTotal, StringFormat={}{0:C2}}"
+                                                           Margin="0,0,10,0"
+                                                           VerticalAlignment="Center" />
+                                                <Button Content="−"
+                                                        Width="30"
+                                                        Height="30"
+                                                        Tag="{Binding}"
+                                                        Click="RemoveFromCart_Click" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <StackPanel Grid.Row="2">
+                                <Separator />
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Total"
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="#17324D" />
+                                    <TextBlock x:Name="CartTotalText"
+                                               Grid.Column="1"
+                                               Text="$0.00"
+                                               FontSize="22"
+                                               FontWeight="Bold"
+                                               Foreground="#1769AA" />
+                                </Grid>
+                                <TextBlock x:Name="CartStatusText"
+                                           Margin="0,10,0,0"
+                                           Foreground="#65758B"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
