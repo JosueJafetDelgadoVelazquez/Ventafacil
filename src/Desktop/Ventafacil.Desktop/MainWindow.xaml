@@ -66,12 +66,23 @@
                                    FontWeight="SemiBold"
                                    Foreground="#AFC4D8" />
                         <Button Content="Punto de venta"
+                                x:Name="PointOfSaleButton"
                                 HorizontalContentAlignment="Left"
                                 Padding="12,10"
                                 Background="#245779"
                                 Foreground="White"
                                 FontWeight="SemiBold"
-                                BorderThickness="0" />
+                                BorderThickness="0"
+                                Click="PointOfSale_Click" />
+                        <Button Content="Inventario"
+                                x:Name="InventoryButton"
+                                Margin="0,8,0,0"
+                                HorizontalContentAlignment="Left"
+                                Padding="12,10"
+                                Background="Transparent"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="Inventory_Click" />
                     </StackPanel>
                     <Button x:Name="ConfigurePasswordButton"
                             DockPanel.Dock="Bottom"
@@ -85,7 +96,7 @@
                 </DockPanel>
             </Border>
 
-            <Grid Grid.Column="1" Margin="28,24">
+            <Grid x:Name="SalesContentView" Grid.Column="1" Margin="28,24">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -271,6 +282,107 @@
                         </Grid>
                     </Border>
                 </Grid>
+            </Grid>
+
+            <Grid x:Name="InventoryContentView"
+                  Grid.Column="1"
+                  Margin="28,24"
+                  Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Inventario"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   Foreground="#17324D" />
+                        <TextBlock Text="Administra los productos disponibles para venta"
+                                   Margin="0,4,0,0"
+                                   Foreground="#65758B" />
+                    </StackPanel>
+                    <Button Grid.Column="1"
+                            Content="Crear producto"
+                            Padding="16,10"
+                            VerticalAlignment="Center"
+                            Background="#1769AA"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Click="CreateProduct_Click" />
+                </Grid>
+
+                <Border Grid.Row="1" Padding="20" Background="White" CornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Productos registrados"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Foreground="#17324D" />
+                        <Grid Grid.Row="1" Margin="0,12,0,0">
+                            <ListView x:Name="InventoryProductsList"
+                                      BorderThickness="0"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="12,10"
+                                                BorderBrush="#E7EBF0"
+                                                BorderThickness="0,0,0,1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2*" />
+                                                    <ColumnDefinition Width="1.2*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#17324D" />
+                                                    <TextBlock Text="{Binding Barcode, TargetNullValue=Sin código de barras}"
+                                                               Margin="0,3,0,0"
+                                                               FontSize="12"
+                                                               Foreground="#65758B" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Category, TargetNullValue=Sin categoría}"
+                                                           VerticalAlignment="Center"
+                                                           Foreground="#65758B" />
+                                                <StackPanel Grid.Column="2"
+                                                            Margin="16,0"
+                                                            VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Price, StringFormat={}{0:C2}}"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#17324D" />
+                                                    <TextBlock Text="{Binding Stock, StringFormat=Existencia: {0}}"
+                                                               Margin="0,3,0,0"
+                                                               FontSize="12"
+                                                               Foreground="#65758B" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <TextBlock x:Name="InventoryEmptyText"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="#65758B"
+                                       Text="No hay productos registrados todavía."
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed" />
+                        </Grid>
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
     </Grid>

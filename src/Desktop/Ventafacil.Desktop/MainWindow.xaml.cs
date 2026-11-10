@@ -21,6 +21,7 @@ public partial class MainWindow : Window
         _passwordStore = passwordStore;
 
         ProductsList.ItemsSource = new ObservableCollection<Product>();
+        InventoryProductsList.ItemsSource = new ObservableCollection<Product>();
         CartList.ItemsSource = _cart;
         ConfigurePasswordButton.Visibility = _passwordStore.HasPassword
             ? Visibility.Collapsed
@@ -34,7 +35,7 @@ public partial class MainWindow : Window
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        if (PointOfSaleView.Visibility == Visibility.Visible)
+        if (SalesContentView.Visibility == Visibility.Visible)
             await RefreshProductsAsync();
     }
 
@@ -49,6 +50,54 @@ public partial class MainWindow : Window
     {
         LoginView.Visibility = Visibility.Collapsed;
         PointOfSaleView.Visibility = Visibility.Visible;
+        SalesContentView.Visibility = Visibility.Visible;
+        InventoryContentView.Visibility = Visibility.Collapsed;
+        PointOfSaleButton.Background = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(36, 87, 121));
+        InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
+    }
+
+    private async void PointOfSale_Click(object sender, RoutedEventArgs e)
+    {
+        ShowPointOfSale();
+        await RefreshProductsAsync();
+    }
+
+    private async void Inventory_Click(object sender, RoutedEventArgs e)
+    {
+        SalesContentView.Visibility = Visibility.Collapsed;
+        InventoryContentView.Visibility = Visibility.Visible;
+        PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
+        InventoryButton.Background = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(36, 87, 121));
+        await RefreshInventoryAsync();
+    }
+
+    private async void CreateProduct_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ProductEditorWindow { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.CreatedProduct is not { } product)
+            return;
+
+        try
+        {
+            await _productsRepository.AddAsync(product);
+            await RefreshInventoryAsync();
+            await RefreshProductsAsync();
+            MessageBox.Show(
+                "El producto se guardó correctamente.",
+                "Producto creado",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo guardar el producto.{Environment.NewLine}{exception.Message}",
+                "Error al guardar producto",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     private async void Login_Click(object sender, RoutedEventArgs e)
@@ -116,11 +165,32 @@ public partial class MainWindow : Window
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
+
         catch (Exception exception)
         {
             MessageBox.Show(
                 $"No se pudieron cargar los productos.{Environment.NewLine}{exception.Message}",
                 "Error al cargar productos",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private async Task RefreshInventoryAsync()
+    {
+        try
+        {
+            var products = await _productsRepository.GetAllAsync();
+            InventoryProductsList.ItemsSource = products;
+            InventoryEmptyText.Visibility = products.Count == 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo cargar el inventario.{Environment.NewLine}{exception.Message}",
+                "Error al cargar inventario",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }

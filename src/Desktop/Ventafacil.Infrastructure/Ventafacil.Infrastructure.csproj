@@ -10,6 +10,7 @@
     <!-- Usa la última versión estable 10.x disponible en NuGet -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,4 +18,3 @@
   </ItemGroup>
 
 </Project>
-
