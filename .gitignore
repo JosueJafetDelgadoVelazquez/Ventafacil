@@ -481,5 +481,5 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Local run command note
+# Local run command note.
 COMANDO_PARA_EJECUTAR.txt
