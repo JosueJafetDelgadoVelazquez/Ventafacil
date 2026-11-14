@@ -25,35 +25,48 @@ public sealed class PasswordStore
     public bool TrySetPassword(string password)
     {
         ArgumentNullException.ThrowIfNull(password);
-        if (password.Length < 6)
-            throw new ArgumentException("La contraseña debe tener al menos 6 caracteres.", nameof(password));
+        ValidatePassword(password);
         if (HasPassword)
             return false;
 
-        var salt = RandomNumberGenerator.GetBytes(SaltSize);
-        var hash = Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            salt,
-            Iterations,
-            HashAlgorithmName.SHA256,
-            HashSize);
-        var entry = new PasswordEntry(
-            Iterations,
-            Convert.ToBase64String(salt),
-            Convert.ToBase64String(hash));
-        var temporaryPath = $"{_filePath}.{Guid.NewGuid():N}.tmp";
+        SavePassword(password, overwrite: false);
+        return true;
+    }
 
+    public bool TryChangePassword(string currentPassword, string newPassword)
+    {
+        ArgumentNullException.ThrowIfNull(currentPassword);
+        ArgumentNullException.ThrowIfNull(newPassword);
+        ValidatePassword(newPassword);
+        if (!HasPassword || !VerifyPassword(currentPassword))
+            return false;
+
+        SavePassword(newPassword, overwrite: true);
+        return true;
+    }
+
+    private void SavePassword(string password, bool overwrite)
+    {
+        var salt = RandomNumberGenerator.GetBytes(SaltSize);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, HashSize);
+        var entry = new PasswordEntry(Iterations, Convert.ToBase64String(salt), Convert.ToBase64String(hash));
+        var temporaryPath = $"{_filePath}.{Guid.NewGuid():N}.tmp";
         try
         {
             File.WriteAllText(temporaryPath, JsonSerializer.Serialize(entry));
-            File.Move(temporaryPath, _filePath);
-            return true;
+            File.Move(temporaryPath, _filePath, overwrite);
         }
         finally
         {
             if (File.Exists(temporaryPath))
                 File.Delete(temporaryPath);
         }
+    }
+
+    private static void ValidatePassword(string password)
+    {
+        if (password.Length < 6)
+            throw new ArgumentException("La contraseña debe tener al menos 6 caracteres.", nameof(password));
     }
 
     public bool VerifyPassword(string password)

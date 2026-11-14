@@ -83,16 +83,16 @@
                                 Foreground="White"
                                 BorderThickness="0"
                                 Click="Inventory_Click" />
+                        <Button Content="Configuración"
+                                x:Name="SettingsButton"
+                                Margin="0,8,0,0"
+                                HorizontalContentAlignment="Left"
+                                Padding="12,10"
+                                Background="Transparent"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="Settings_Click" />
                     </StackPanel>
-                    <Button x:Name="ConfigurePasswordButton"
-                            DockPanel.Dock="Bottom"
-                            Content="Configurar contraseña"
-                            HorizontalContentAlignment="Left"
-                            Padding="12,10"
-                            Background="Transparent"
-                            Foreground="White"
-                            BorderBrush="#49647D"
-                            Click="ConfigurePassword_Click" />
                 </DockPanel>
             </Border>
 
@@ -382,6 +382,75 @@
                                        Visibility="Collapsed" />
                         </Grid>
                     </Grid>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="SettingsContentView"
+                  Grid.Column="1"
+                  Margin="28,24"
+                  Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Configuración"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#17324D" />
+                    <TextBlock Text="Administra la contraseña de acceso a VentaFácil"
+                               Margin="0,4,0,0"
+                               Foreground="#65758B" />
+                </StackPanel>
+
+                <Border Grid.Row="1"
+                        Padding="24"
+                        Background="White"
+                        CornerRadius="10"
+                        VerticalAlignment="Top">
+                    <StackPanel MaxWidth="520" HorizontalAlignment="Left">
+                        <TextBlock Text="Contraseña de acceso"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Foreground="#17324D" />
+                        <TextBlock x:Name="PasswordSettingsDescription"
+                                   Margin="0,6,0,20"
+                                   Foreground="#65758B"
+                                   TextWrapping="Wrap" />
+
+                        <StackPanel x:Name="CurrentPasswordPanel" Visibility="Collapsed">
+                            <TextBlock Text="Contraseña actual" Margin="0,0,0,5" />
+                            <PasswordBox x:Name="CurrentPasswordBox"
+                                         Height="38"
+                                         Padding="8"
+                                         FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="Nueva contraseña (mínimo 6 caracteres)"
+                                   Margin="0,16,0,5" />
+                        <PasswordBox x:Name="NewPasswordBox"
+                                     Height="38"
+                                     Padding="8"
+                                     FontSize="15" />
+                        <TextBlock Text="Confirma la nueva contraseña" Margin="0,14,0,5" />
+                        <PasswordBox x:Name="ConfirmNewPasswordBox"
+                                     Height="38"
+                                     Padding="8"
+                                     FontSize="15" />
+                        <TextBlock x:Name="PasswordSettingsStatus"
+                                   Margin="0,12,0,0"
+                                   Foreground="#B42318"
+                                   TextWrapping="Wrap" />
+                        <Button Content="Guardar contraseña"
+                                HorizontalAlignment="Right"
+                                Margin="0,18,0,0"
+                                Padding="16,9"
+                                Background="#1769AA"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Click="SavePasswordSettings_Click" />
+                    </StackPanel>
                 </Border>
             </Grid>
         </Grid>

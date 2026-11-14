@@ -23,9 +23,12 @@ public partial class MainWindow : Window
         ProductsList.ItemsSource = new ObservableCollection<Product>();
         InventoryProductsList.ItemsSource = new ObservableCollection<Product>();
         CartList.ItemsSource = _cart;
-        ConfigurePasswordButton.Visibility = _passwordStore.HasPassword
-            ? Visibility.Collapsed
-            : Visibility.Visible;
+        CurrentPasswordPanel.Visibility = _passwordStore.HasPassword
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        PasswordSettingsDescription.Text = _passwordStore.HasPassword
+            ? "Ingresa tu contraseña actual para establecer una nueva."
+            : "Aún no hay una contraseña configurada. Puedes crearla aquí.";
 
         if (_passwordStore.HasPassword)
             ShowLogin();
@@ -52,9 +55,11 @@ public partial class MainWindow : Window
         PointOfSaleView.Visibility = Visibility.Visible;
         SalesContentView.Visibility = Visibility.Visible;
         InventoryContentView.Visibility = Visibility.Collapsed;
+        SettingsContentView.Visibility = Visibility.Collapsed;
         PointOfSaleButton.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(36, 87, 121));
         InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
+        SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
     }
 
     private async void PointOfSale_Click(object sender, RoutedEventArgs e)
@@ -67,10 +72,26 @@ public partial class MainWindow : Window
     {
         SalesContentView.Visibility = Visibility.Collapsed;
         InventoryContentView.Visibility = Visibility.Visible;
+        SettingsContentView.Visibility = Visibility.Collapsed;
         PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
         InventoryButton.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(36, 87, 121));
+        SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
         await RefreshInventoryAsync();
+    }
+
+    private void Settings_Click(object sender, RoutedEventArgs e)
+    {
+        SalesContentView.Visibility = Visibility.Collapsed;
+        InventoryContentView.Visibility = Visibility.Collapsed;
+        SettingsContentView.Visibility = Visibility.Visible;
+        PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
+        InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
+        SettingsButton.Background = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(36, 87, 121));
+        PasswordSettingsStatus.Foreground = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(180, 35, 24));
+        PasswordSettingsStatus.Text = string.Empty;
     }
 
     private async void CreateProduct_Click(object sender, RoutedEventArgs e)
@@ -235,32 +256,57 @@ public partial class MainWindow : Window
         UpdateCartSummary();
     }
 
-    private void ConfigurePassword_Click(object sender, RoutedEventArgs e)
+    private void SavePasswordSettings_Click(object sender, RoutedEventArgs e)
     {
-        if (_passwordStore.HasPassword)
-            return;
+        PasswordSettingsStatus.Foreground = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(180, 35, 24));
 
-        var dialog = new PasswordSetupWindow { Owner = this };
-        if (dialog.ShowDialog() != true)
-            return;
-
-        if (!_passwordStore.TrySetPassword(dialog.Password))
+        if (NewPasswordBox.Password.Length < 6)
         {
-            ConfigurePasswordButton.Visibility = Visibility.Collapsed;
-            MessageBox.Show(
-                "Ya existe una contraseña configurada.",
-                "Contraseña",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            PasswordSettingsStatus.Text = "La contraseña debe tener al menos 6 caracteres.";
             return;
         }
 
-        ConfigurePasswordButton.Visibility = Visibility.Collapsed;
-        MessageBox.Show(
-            "La contraseña quedó configurada. Se solicitará al iniciar VentaFácil.",
-            "Contraseña configurada",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        if (!string.Equals(NewPasswordBox.Password, ConfirmNewPasswordBox.Password, StringComparison.Ordinal))
+        {
+            PasswordSettingsStatus.Text = "Las contraseñas no coinciden.";
+            ConfirmNewPasswordBox.Clear();
+            ConfirmNewPasswordBox.Focus();
+            return;
+        }
+
+        try
+        {
+            var saved = _passwordStore.HasPassword
+                ? _passwordStore.TryChangePassword(CurrentPasswordBox.Password, NewPasswordBox.Password)
+                : _passwordStore.TrySetPassword(NewPasswordBox.Password);
+            if (!saved)
+            {
+                PasswordSettingsStatus.Text = _passwordStore.HasPassword
+                    ? "La contraseña actual no es correcta."
+                    : "No se pudo guardar la contraseña. Inténtalo de nuevo.";
+                CurrentPasswordBox.Clear();
+                CurrentPasswordBox.Focus();
+                return;
+            }
+
+            CurrentPasswordPanel.Visibility = Visibility.Visible;
+            PasswordSettingsDescription.Text = "Ingresa tu contraseña actual para establecer una nueva.";
+            CurrentPasswordBox.Clear();
+            NewPasswordBox.Clear();
+            ConfirmNewPasswordBox.Clear();
+            PasswordSettingsStatus.Foreground = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(22, 101, 52));
+            PasswordSettingsStatus.Text = "La contraseña se guardó correctamente.";
+        }
+        catch (Exception exception) when (exception is IOException or System.Text.Json.JsonException or UnauthorizedAccessException)
+        {
+            MessageBox.Show(
+                $"No se pudo guardar la contraseña.{Environment.NewLine}{exception.Message}",
+                "Error de configuración",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     private void UpdateCartSummary()
