@@ -399,59 +399,84 @@
                                FontSize="28"
                                FontWeight="Bold"
                                Foreground="#17324D" />
-                    <TextBlock Text="Administra la contraseña de acceso a VentaFácil"
+                    <TextBlock Text="Administra el acceso y genera reportes del inventario"
                                Margin="0,4,0,0"
                                Foreground="#65758B" />
                 </StackPanel>
 
-                <Border Grid.Row="1"
-                        Padding="24"
-                        Background="White"
-                        CornerRadius="10"
-                        VerticalAlignment="Top">
-                    <StackPanel MaxWidth="520" HorizontalAlignment="Left">
-                        <TextBlock Text="Contraseña de acceso"
-                                   FontSize="20"
-                                   FontWeight="SemiBold"
-                                   Foreground="#17324D" />
-                        <TextBlock x:Name="PasswordSettingsDescription"
-                                   Margin="0,6,0,20"
-                                   Foreground="#65758B"
-                                   TextWrapping="Wrap" />
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <Border Padding="24"
+                                Background="White"
+                                CornerRadius="10">
+                            <StackPanel MaxWidth="520" HorizontalAlignment="Left">
+                                <TextBlock Text="Contraseña de acceso"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Foreground="#17324D" />
+                                <TextBlock x:Name="PasswordSettingsDescription"
+                                           Margin="0,6,0,20"
+                                           Foreground="#65758B"
+                                           TextWrapping="Wrap" />
 
-                        <StackPanel x:Name="CurrentPasswordPanel" Visibility="Collapsed">
-                            <TextBlock Text="Contraseña actual" Margin="0,0,0,5" />
-                            <PasswordBox x:Name="CurrentPasswordBox"
-                                         Height="38"
-                                         Padding="8"
-                                         FontSize="15" />
-                        </StackPanel>
+                                <StackPanel x:Name="CurrentPasswordPanel" Visibility="Collapsed">
+                                    <TextBlock Text="Contraseña actual" Margin="0,0,0,5" />
+                                    <PasswordBox x:Name="CurrentPasswordBox"
+                                                 Height="38"
+                                                 Padding="8"
+                                                 FontSize="15" />
+                                </StackPanel>
 
-                        <TextBlock Text="Nueva contraseña (mínimo 6 caracteres)"
-                                   Margin="0,16,0,5" />
-                        <PasswordBox x:Name="NewPasswordBox"
-                                     Height="38"
-                                     Padding="8"
-                                     FontSize="15" />
-                        <TextBlock Text="Confirma la nueva contraseña" Margin="0,14,0,5" />
-                        <PasswordBox x:Name="ConfirmNewPasswordBox"
-                                     Height="38"
-                                     Padding="8"
-                                     FontSize="15" />
-                        <TextBlock x:Name="PasswordSettingsStatus"
-                                   Margin="0,12,0,0"
-                                   Foreground="#B42318"
-                                   TextWrapping="Wrap" />
-                        <Button Content="Guardar contraseña"
-                                HorizontalAlignment="Right"
-                                Margin="0,18,0,0"
-                                Padding="16,9"
-                                Background="#1769AA"
-                                Foreground="White"
-                                FontWeight="SemiBold"
-                                Click="SavePasswordSettings_Click" />
+                                <TextBlock Text="Nueva contraseña (mínimo 6 caracteres)"
+                                           Margin="0,16,0,5" />
+                                <PasswordBox x:Name="NewPasswordBox"
+                                             Height="38"
+                                             Padding="8"
+                                             FontSize="15" />
+                                <TextBlock Text="Confirma la nueva contraseña" Margin="0,14,0,5" />
+                                <PasswordBox x:Name="ConfirmNewPasswordBox"
+                                             Height="38"
+                                             Padding="8"
+                                             FontSize="15" />
+                                <TextBlock x:Name="PasswordSettingsStatus"
+                                           Margin="0,12,0,0"
+                                           Foreground="#B42318"
+                                           TextWrapping="Wrap" />
+                                <Button Content="Guardar contraseña"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,18,0,0"
+                                        Padding="16,9"
+                                        Background="#1769AA"
+                                        Foreground="White"
+                                        FontWeight="SemiBold"
+                                        Click="SavePasswordSettings_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,16,0,0"
+                                Padding="24"
+                                Background="White"
+                                CornerRadius="10">
+                            <StackPanel MaxWidth="520" HorizontalAlignment="Left">
+                                <TextBlock Text="Reportes"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Foreground="#17324D" />
+                                <TextBlock Text="Genera un archivo CSV con el inventario actual, incluyendo precios, categorías y existencias."
+                                           Margin="0,6,0,16"
+                                           Foreground="#65758B"
+                                           TextWrapping="Wrap" />
+                                <Button Content="Crear reporte de inventario"
+                                        HorizontalAlignment="Left"
+                                        Padding="16,9"
+                                        Background="#1769AA"
+                                        Foreground="White"
+                                        FontWeight="SemiBold"
+                                        Click="CreateInventoryReport_Click" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </Border>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </Grid>

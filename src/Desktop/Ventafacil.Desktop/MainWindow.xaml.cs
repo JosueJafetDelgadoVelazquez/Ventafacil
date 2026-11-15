@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using Ventafacil.Domain.Abstractions;
 using Ventafacil.Domain.Entities;
 
@@ -92,6 +93,61 @@ public partial class MainWindow : Window
         PasswordSettingsStatus.Foreground = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(180, 35, 24));
         PasswordSettingsStatus.Text = string.Empty;
+    }
+
+    private async void CreateInventoryReport_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Title = "Guardar reporte de inventario",
+            FileName = $"inventario-{DateTime.Now:yyyyMMdd-HHmmss}.csv",
+            Filter = "Archivo CSV (*.csv)|*.csv",
+            DefaultExt = ".csv",
+            AddExtension = true
+        };
+
+        if (dialog.ShowDialog(this) != true)
+            return;
+
+        try
+        {
+            var products = await _productsRepository.GetAllAsync();
+            var rows = new List<string>
+            {
+                "Nombre,Código de barras,Categoría,Precio,Costo,Existencia,Mínimo de inventario,Activo"
+            };
+
+            rows.AddRange(products.Select(product => string.Join(",",
+                CsvField(product.Name),
+                CsvField(product.Barcode),
+                CsvField(product.Category),
+                product.Price.ToString("F2", CultureInfo.InvariantCulture),
+                product.Cost.ToString("F2", CultureInfo.InvariantCulture),
+                product.Stock.ToString(CultureInfo.InvariantCulture),
+                product.MinStock.ToString(CultureInfo.InvariantCulture),
+                product.IsActive ? "Sí" : "No")));
+
+            await File.WriteAllLinesAsync(dialog.FileName, rows, new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            MessageBox.Show(
+                $"El reporte se guardó correctamente en:{Environment.NewLine}{dialog.FileName}",
+                "Reporte creado",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo crear el reporte de inventario.{Environment.NewLine}{exception.Message}",
+                "Error al crear reporte",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private static string CsvField(string? value)
+    {
+        var escaped = (value ?? string.Empty).Replace("\"", "\"\"");
+        return $"\"{escaped}\"";
     }
 
     private async void CreateProduct_Click(object sender, RoutedEventArgs e)

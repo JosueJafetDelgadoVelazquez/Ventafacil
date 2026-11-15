@@ -34,7 +34,15 @@
                 <TextBox x:Name="BarcodeTextBox" Height="38" Margin="0,6,0,14" Padding="8" />
 
                 <TextBlock Text="Categoría" FontWeight="SemiBold" Foreground="#17324D" />
-                <TextBox x:Name="CategoryTextBox" Height="38" Margin="0,6,0,14" Padding="8" />
+                <ComboBox x:Name="CategoryComboBox"
+                          Height="38"
+                          Margin="0,6,0,14"
+                          Padding="8"
+                          SelectedIndex="-1">
+                    <ComboBoxItem Content="Ropa" />
+                    <ComboBoxItem Content="Perecederos" />
+                    <ComboBoxItem Content="Normales" />
+                </ComboBox>
 
                 <Grid>
                     <Grid.ColumnDefinitions>

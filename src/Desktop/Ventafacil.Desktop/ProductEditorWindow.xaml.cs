@@ -23,6 +23,12 @@ public partial class ProductEditorWindow : Window
             return;
         }
 
+        if (CategoryComboBox.SelectedItem is not System.Windows.Controls.ComboBoxItem { Content: string category })
+        {
+            ShowValidationError("Selecciona una categoría para el producto.", CategoryComboBox);
+            return;
+        }
+
         if (!TryParseNonNegativeDecimal(PriceTextBox.Text, out var price))
         {
             ShowValidationError("Escribe un precio válido y no negativo.", PriceTextBox);
@@ -51,7 +57,7 @@ public partial class ProductEditorWindow : Window
         {
             Name = name,
             Barcode = EmptyToNull(BarcodeTextBox.Text),
-            Category = EmptyToNull(CategoryTextBox.Text),
+            Category = category,
             Price = price,
             Cost = cost,
             Stock = stock,
