@@ -65,6 +65,40 @@ public class ProductRepository : IProductRepository
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task DeductStockAsync(IReadOnlyDictionary<Guid, int> quantities, CancellationToken ct = default)
+    {
+        if (quantities.Count == 0)
+            throw new ArgumentException("La venta debe incluir al menos un producto.", nameof(quantities));
+
+        if (quantities.Any(item => item.Value <= 0))
+            throw new ArgumentException("La cantidad de cada producto debe ser mayor que cero.", nameof(quantities));
+
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        var products = await db.Products
+            .Where(product => quantities.Keys.Contains(product.Id))
+            .ToListAsync(ct);
+
+        foreach (var (productId, quantity) in quantities)
+        {
+            var product = products.FirstOrDefault(item => item.Id == productId)
+                          ?? throw new InvalidOperationException("Uno de los productos ya no está disponible.");
+
+            if (!product.IsActive)
+                throw new InvalidOperationException($"El producto {product.Name} ya no está activo.");
+
+            if (product.Stock < quantity)
+                throw new InvalidOperationException(
+                    $"Existencia insuficiente para {product.Name}. Disponible: {product.Stock}; solicitado: {quantity}.");
+
+            product.Stock -= quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await db.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);
+    }
+
     public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         await using var db = await _factory.CreateDbContextAsync(ct);

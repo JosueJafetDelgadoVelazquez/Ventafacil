@@ -278,6 +278,12 @@
                                            Margin="0,10,0,0"
                                            Foreground="#65758B"
                                            TextWrapping="Wrap" />
+                                <Button x:Name="SellButton"
+                                        Content="Vender"
+                                        Margin="0,14,0,0"
+                                        Padding="14,10"
+                                        IsEnabled="False"
+                                        Click="Sell_Click" />
                             </StackPanel>
                         </Grid>
                     </Border>

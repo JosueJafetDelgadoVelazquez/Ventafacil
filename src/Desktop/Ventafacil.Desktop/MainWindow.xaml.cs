@@ -312,6 +312,47 @@ public partial class MainWindow : Window
         UpdateCartSummary();
     }
 
+    private async void Sell_Click(object sender, RoutedEventArgs e)
+    {
+        if (_cart.Count == 0)
+            return;
+
+        var total = _cart.Sum(item => item.LineTotal);
+        var confirmation = MessageBox.Show(
+            this,
+            $"¿Confirmas la venta por {total.ToString("C2", CultureInfo.GetCultureInfo("es-MX"))}?",
+            "Confirmar venta",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (confirmation != MessageBoxResult.Yes)
+            return;
+
+        var quantities = _cart.ToDictionary(item => item.ProductId, item => item.Quantity);
+        try
+        {
+            await _productsRepository.DeductStockAsync(quantities);
+            _cart.Clear();
+            UpdateCartSummary();
+            await RefreshProductsAsync();
+            await RefreshInventoryAsync();
+            MessageBox.Show(
+                this,
+                $"Venta completada por {total.ToString("C2", CultureInfo.GetCultureInfo("es-MX"))}. El inventario se actualizó.",
+                "Venta completada",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                this,
+                $"No se pudo completar la venta.{Environment.NewLine}{exception.Message}",
+                "Error al vender",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
     private void SavePasswordSettings_Click(object sender, RoutedEventArgs e)
     {
         PasswordSettingsStatus.Foreground = new System.Windows.Media.SolidColorBrush(
@@ -372,6 +413,7 @@ public partial class MainWindow : Window
         CartStatusText.Text = _cart.Count == 0
             ? "El carrito está vacío."
             : $"{_cart.Sum(item => item.Quantity)} artículo(s) en el carrito.";
+        SellButton.IsEnabled = _cart.Count > 0;
     }
 
     private sealed record CartItem(Guid ProductId, string Name, decimal UnitPrice, int Quantity)
