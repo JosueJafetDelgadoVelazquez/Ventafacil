@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
             e.Property(p => p.Name).IsRequired().HasMaxLength(200);
             e.Property(p => p.Barcode).HasMaxLength(64);
             e.Property(p => p.Category).HasMaxLength(100);
+            e.Property(p => p.ImagePath).HasMaxLength(1024);
 
             // SQLite no tiene decimal real: se guarda en centavos (long) para evitar errores de redondeo.
             e.Property(p => p.Price).HasConversion(v => (long)Math.Round(v * 100m), v => v / 100m);

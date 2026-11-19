@@ -241,6 +241,8 @@ public partial class MainWindow : Window
             ProductsEmptyText.Visibility = products.Count == 0
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+            SelectedProductPreview.Visibility = Visibility.Collapsed;
+            ProductsList.SelectedItem = null;
         }
 
         catch (Exception exception)
@@ -280,7 +282,7 @@ public partial class MainWindow : Window
 
         var existingItem = _cart.FirstOrDefault(item => item.ProductId == product.Id);
         if (existingItem is null)
-            _cart.Add(new CartItem(product.Id, product.Name, product.Price, 1));
+            _cart.Add(new CartItem(product.Id, product.Name, product.Price, 1, product.ImagePath));
         else
         {
             var index = _cart.IndexOf(existingItem);
@@ -310,6 +312,26 @@ public partial class MainWindow : Window
     {
         _cart.Clear();
         UpdateCartSummary();
+    }
+
+    private void ProductsList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (ProductsList.SelectedItem is not Product product)
+        {
+            SelectedProductPreview.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var converter = new ImagePathToBitmapConverter();
+        SelectedProductImage.Source = converter.Convert(
+            product.ImagePath,
+            typeof(System.Windows.Media.Imaging.BitmapSource),
+            null,
+            CultureInfo.CurrentCulture) as System.Windows.Media.Imaging.BitmapSource;
+        SelectedProductName.Text = product.Name;
+        SelectedProductPrice.Text = product.Price.ToString("C2", CultureInfo.GetCultureInfo("es-MX"));
+        SelectedProductStock.Text = $"Existencia: {product.Stock}";
+        SelectedProductPreview.Visibility = Visibility.Visible;
     }
 
     private async void Sell_Click(object sender, RoutedEventArgs e)
@@ -416,7 +438,7 @@ public partial class MainWindow : Window
         SellButton.IsEnabled = _cart.Count > 0;
     }
 
-    private sealed record CartItem(Guid ProductId, string Name, decimal UnitPrice, int Quantity)
+    private sealed record CartItem(Guid ProductId, string Name, decimal UnitPrice, int Quantity, string? ImagePath)
     {
         public decimal LineTotal => UnitPrice * Quantity;
     }

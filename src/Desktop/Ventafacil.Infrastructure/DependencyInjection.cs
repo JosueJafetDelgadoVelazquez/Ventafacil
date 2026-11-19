@@ -32,6 +32,28 @@ public static class DependencyInjection
         var factory = provider.GetRequiredService<IDbContextFactory<AppDbContext>>();
         await using var db = await factory.CreateDbContextAsync();
         await db.Database.EnsureCreatedAsync();
+
+        // Permite actualizar bases creadas antes de que existiera la columna de imagen.
+        var connection = db.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA table_info(\"Products\")";
+        await using var reader = await command.ExecuteReaderAsync();
+        var hasImagePath = false;
+        while (await reader.ReadAsync())
+        {
+            if (string.Equals(reader["name"]?.ToString(), "ImagePath", StringComparison.OrdinalIgnoreCase))
+            {
+                hasImagePath = true;
+                break;
+            }
+        }
+        await reader.CloseAsync();
+        await connection.CloseAsync();
+
+        if (!hasImagePath)
+            await db.Database.ExecuteSqlRawAsync(
+                "ALTER TABLE \"Products\" ADD COLUMN \"ImagePath\" TEXT NULL");
     }
 }
 

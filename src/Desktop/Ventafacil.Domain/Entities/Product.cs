@@ -13,6 +13,7 @@ public class Product
     public decimal Cost { get; set; }    // costo de compra
     public int Stock { get; set; }
     public int MinStock { get; set; }    // alerta de stock bajo
+    public string? ImagePath { get; set; }
 
     public bool IsActive { get; set; } = true;
     public bool IsDeleted { get; set; }  // borrado lógico (útil para respaldos/sync)

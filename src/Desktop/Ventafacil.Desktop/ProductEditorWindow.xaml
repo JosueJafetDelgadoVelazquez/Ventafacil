@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Crear producto"
         Width="480"
-        Height="670"
-        MinHeight="620"
+        Height="760"
+        MinHeight="700"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Background="#F3F5F8">
@@ -27,6 +27,39 @@
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
+                <TextBlock Text="Imagen del producto" FontWeight="SemiBold" Foreground="#17324D" />
+                <Border Height="150"
+                        Margin="0,6,0,8"
+                        BorderBrush="#CBD5E1"
+                        BorderThickness="1"
+                        Background="#F8FAFC"
+                        CornerRadius="8">
+                    <Grid>
+                        <Image x:Name="ProductImagePreview"
+                               Margin="8"
+                               Stretch="Uniform"
+                               Visibility="Collapsed" />
+                        <TextBlock x:Name="NoImageText"
+                                   Text="Sin imagen"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="#94A3B8" />
+                    </Grid>
+                </Border>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                    <Button Content="Seleccionar imagen"
+                            Padding="12,8"
+                            Background="#1769AA"
+                            Foreground="White"
+                            Click="SelectImage_Click" />
+                    <Button x:Name="RemoveImageButton"
+                            Content="Quitar"
+                            Margin="8,0,0,0"
+                            Padding="12,8"
+                            Visibility="Collapsed"
+                            Click="RemoveImage_Click" />
+                </StackPanel>
+
                 <TextBlock Text="Nombre *" FontWeight="SemiBold" Foreground="#17324D" />
                 <TextBox x:Name="NameTextBox" Height="38" Margin="0,6,0,14" Padding="8" />
 

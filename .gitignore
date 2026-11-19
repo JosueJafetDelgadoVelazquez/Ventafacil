@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Local run command note.
 COMANDO_PARA_EJECUTAR.txt
+
+# Local Windows security helper scripts.
+Abrir-SmartAppControl.ps1

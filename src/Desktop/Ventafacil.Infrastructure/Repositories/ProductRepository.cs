@@ -59,6 +59,7 @@ public class ProductRepository : IProductRepository
         current.Cost = product.Cost;
         current.Stock = product.Stock;
         current.MinStock = product.MinStock;
+        current.ImagePath = product.ImagePath;
         current.IsActive = product.IsActive;
         current.UpdatedAt = DateTime.UtcNow;
 
