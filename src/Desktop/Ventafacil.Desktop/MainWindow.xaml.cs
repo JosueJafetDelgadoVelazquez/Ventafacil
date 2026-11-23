@@ -153,7 +153,7 @@ public partial class MainWindow : Window
     private async void CreateProduct_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new ProductEditorWindow { Owner = this };
-        if (dialog.ShowDialog() != true || dialog.CreatedProduct is not { } product)
+        if (dialog.ShowDialog() != true || dialog.SavedProduct is not { } product)
             return;
 
         try
@@ -175,6 +175,92 @@ public partial class MainWindow : Window
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
+    }
+
+    private async void EditProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: Product product })
+            return;
+
+        var dialog = new ProductEditorWindow(product) { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.SavedProduct is not { } updatedProduct)
+            return;
+
+        try
+        {
+            await _productsRepository.UpdateAsync(updatedProduct);
+            UpdateCartProduct(updatedProduct);
+            await RefreshInventoryAsync();
+            await RefreshProductsAsync();
+            MessageBox.Show(
+                "Los datos del producto se actualizaron correctamente.",
+                "Producto actualizado",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo actualizar el producto.{Environment.NewLine}{exception.Message}",
+                "Error al actualizar producto",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private async void DeleteProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: Product product })
+            return;
+
+        var confirmation = MessageBox.Show(
+            this,
+            $"¿Deseas eliminar el producto \"{product.Name}\"? Dejará de aparecer en el inventario.",
+            "Confirmar eliminación",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (confirmation != MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            await _productsRepository.DeleteAsync(product.Id);
+            var cartItem = _cart.FirstOrDefault(item => item.ProductId == product.Id);
+            if (cartItem is not null)
+                _cart.Remove(cartItem);
+            UpdateCartSummary();
+            await RefreshInventoryAsync();
+            await RefreshProductsAsync();
+            MessageBox.Show(
+                "El producto se eliminó correctamente.",
+                "Producto eliminado",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo eliminar el producto.{Environment.NewLine}{exception.Message}",
+                "Error al eliminar producto",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void UpdateCartProduct(Product product)
+    {
+        var cartItem = _cart.FirstOrDefault(item => item.ProductId == product.Id);
+        if (cartItem is null)
+            return;
+
+        var index = _cart.IndexOf(cartItem);
+        _cart[index] = cartItem with
+        {
+            Name = product.Name,
+            UnitPrice = product.Price,
+            ImagePath = product.ImagePath
+        };
+        UpdateCartSummary();
     }
 
     private async void Login_Click(object sender, RoutedEventArgs e)

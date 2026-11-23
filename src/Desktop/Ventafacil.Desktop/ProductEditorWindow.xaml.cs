@@ -9,13 +9,50 @@ namespace Ventafacil.Desktop;
 
 public partial class ProductEditorWindow : Window
 {
-    public Product? CreatedProduct { get; private set; }
+    private readonly Product? _productBeingEdited;
     private string? _selectedImagePath;
+    private bool _removeImage;
+
+    public Product? SavedProduct { get; private set; }
 
     public ProductEditorWindow()
     {
         InitializeComponent();
         NameTextBox.Focus();
+    }
+
+    public ProductEditorWindow(Product product) : this()
+    {
+        _productBeingEdited = product;
+        Title = "Editar producto";
+        EditorTitleText.Text = "Editar producto";
+        EditorDescriptionText.Text = "Actualiza los datos del producto en el inventario";
+        SaveProductButton.Content = "Guardar cambios";
+
+        NameTextBox.Text = product.Name;
+        BarcodeTextBox.Text = product.Barcode ?? string.Empty;
+        CategoryComboBox.Text = product.Category ?? string.Empty;
+        PriceTextBox.Text = product.Price.ToString(CultureInfo.CurrentCulture);
+        CostTextBox.Text = product.Cost.ToString(CultureInfo.CurrentCulture);
+        StockTextBox.Text = product.Stock.ToString(CultureInfo.CurrentCulture);
+        MinStockTextBox.Text = product.MinStock.ToString(CultureInfo.CurrentCulture);
+
+        if (!string.IsNullOrWhiteSpace(product.ImagePath))
+        {
+            var bitmap = new ImagePathToBitmapConverter().Convert(
+                product.ImagePath,
+                typeof(BitmapSource),
+                null,
+                CultureInfo.CurrentCulture) as BitmapSource;
+            if (bitmap is not null)
+            {
+                ProductImagePreview.Source = bitmap;
+                ProductImagePreview.Visibility = Visibility.Visible;
+                NoImageText.Visibility = Visibility.Collapsed;
+            }
+
+            RemoveImageButton.Visibility = Visibility.Visible;
+        }
     }
 
     private void Save_Click(object sender, RoutedEventArgs e)
@@ -27,7 +64,8 @@ public partial class ProductEditorWindow : Window
             return;
         }
 
-        if (CategoryComboBox.SelectedItem is not System.Windows.Controls.ComboBoxItem { Content: string category })
+        var category = CategoryComboBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(category))
         {
             ShowValidationError("Selecciona una categoría para el producto.", CategoryComboBox);
             return;
@@ -59,9 +97,9 @@ public partial class ProductEditorWindow : Window
 
         try
         {
-            var imagePath = CopySelectedImage();
-            CreatedProduct = new Product
+            SavedProduct = new Product
             {
+                Id = _productBeingEdited?.Id ?? Guid.NewGuid(),
                 Name = name,
                 Barcode = EmptyToNull(BarcodeTextBox.Text),
                 Category = category,
@@ -69,7 +107,11 @@ public partial class ProductEditorWindow : Window
                 Cost = cost,
                 Stock = stock,
                 MinStock = minStock,
-                ImagePath = imagePath
+                ImagePath = GetImagePath(),
+                IsActive = _productBeingEdited?.IsActive ?? true,
+                IsDeleted = _productBeingEdited?.IsDeleted ?? false,
+                CreatedAt = _productBeingEdited?.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -102,6 +144,7 @@ public partial class ProductEditorWindow : Window
             bitmap.Freeze();
 
             _selectedImagePath = dialog.FileName;
+            _removeImage = false;
             ProductImagePreview.Source = bitmap;
             ProductImagePreview.Visibility = Visibility.Visible;
             NoImageText.Visibility = Visibility.Collapsed;
@@ -116,10 +159,21 @@ public partial class ProductEditorWindow : Window
     private void RemoveImage_Click(object sender, RoutedEventArgs e)
     {
         _selectedImagePath = null;
+        _removeImage = true;
         ProductImagePreview.Source = null;
         ProductImagePreview.Visibility = Visibility.Collapsed;
         NoImageText.Visibility = Visibility.Visible;
         RemoveImageButton.Visibility = Visibility.Collapsed;
+    }
+
+    private string? GetImagePath()
+    {
+        if (_removeImage)
+            return null;
+
+        return _selectedImagePath is null
+            ? _productBeingEdited?.ImagePath
+            : CopySelectedImage();
     }
 
     private string? CopySelectedImage()

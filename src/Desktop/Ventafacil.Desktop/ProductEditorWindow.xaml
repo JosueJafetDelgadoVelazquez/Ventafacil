@@ -16,11 +16,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel Margin="0,0,0,20">
-            <TextBlock Text="Crear producto"
+            <TextBlock x:Name="EditorTitleText"
+                       Text="Crear producto"
                        FontSize="26"
                        FontWeight="Bold"
                        Foreground="#17324D" />
-            <TextBlock Text="Completa los datos para agregarlo al inventario"
+            <TextBlock x:Name="EditorDescriptionText"
+                       Text="Completa los datos para agregarlo al inventario"
                        Margin="0,4,0,0"
                        Foreground="#65758B" />
         </StackPanel>
@@ -68,6 +70,7 @@
 
                 <TextBlock Text="Categoría" FontWeight="SemiBold" Foreground="#17324D" />
                 <ComboBox x:Name="CategoryComboBox"
+                          IsEditable="True"
                           Height="38"
                           Margin="0,6,0,14"
                           Padding="8"
@@ -100,7 +103,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Existencia inicial *" FontWeight="SemiBold" Foreground="#17324D" />
+                        <TextBlock Text="Existencia *" FontWeight="SemiBold" Foreground="#17324D" />
                         <TextBox x:Name="StockTextBox" Height="38" Margin="0,6,0,14" Padding="8" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
@@ -125,7 +128,8 @@
                     Padding="14,9"
                     Margin="0,0,8,0"
                     IsCancel="True" />
-            <Button Content="Guardar producto"
+            <Button x:Name="SaveProductButton"
+                    Content="Guardar producto"
                     MinWidth="140"
                     Padding="14,9"
                     Background="#1769AA"

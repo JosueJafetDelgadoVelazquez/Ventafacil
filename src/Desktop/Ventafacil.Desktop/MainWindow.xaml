@@ -430,6 +430,17 @@
                                                                Margin="0,3,0,0"
                                                                FontSize="12"
                                                                Foreground="#65758B" />
+                                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                        <Button Content="Editar"
+                                                                Padding="8,4"
+                                                                Tag="{Binding}"
+                                                                Click="EditProduct_Click" />
+                                                        <Button Content="Eliminar"
+                                                                Margin="6,0,0,0"
+                                                                Padding="8,4"
+                                                                Tag="{Binding}"
+                                                                Click="DeleteProduct_Click" />
+                                                    </StackPanel>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
