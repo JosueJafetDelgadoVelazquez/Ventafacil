@@ -8,6 +8,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<SaleItem> SaleItems => Set<SaleItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +38,29 @@ public class AppDbContext : DbContext
 
             // Los productos eliminados no aparecen en ninguna consulta.
             e.HasQueryFilter(p => !p.IsDeleted);
+        });
+
+        modelBuilder.Entity<Sale>(e =>
+        {
+            e.ToTable("Sales");
+            e.HasKey(sale => sale.Id);
+            e.Property(sale => sale.Total)
+                .HasConversion(value => (long)Math.Round(value * 100m), value => value / 100m);
+            e.HasMany(sale => sale.Items)
+                .WithOne()
+                .HasForeignKey(item => item.SaleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(sale => sale.SoldAt);
+        });
+
+        modelBuilder.Entity<SaleItem>(e =>
+        {
+            e.ToTable("SaleItems");
+            e.HasKey(item => item.Id);
+            e.Property(item => item.ProductName).IsRequired().HasMaxLength(200);
+            e.Property(item => item.UnitPrice)
+                .HasConversion(value => (long)Math.Round(value * 100m), value => value / 100m);
+            e.Ignore(item => item.LineTotal);
         });
     }
 }

@@ -12,13 +12,18 @@ namespace Ventafacil.Desktop;
 public partial class MainWindow : Window
 {
     private readonly IProductRepository _productsRepository;
+    private readonly ISaleRepository _salesRepository;
     private readonly PasswordStore _passwordStore;
     private readonly ObservableCollection<CartItem> _cart = [];
 
-    public MainWindow(IProductRepository productsRepository, PasswordStore passwordStore)
+    public MainWindow(
+        IProductRepository productsRepository,
+        ISaleRepository salesRepository,
+        PasswordStore passwordStore)
     {
         InitializeComponent();
         _productsRepository = productsRepository;
+        _salesRepository = salesRepository;
         _passwordStore = passwordStore;
 
         ProductsList.ItemsSource = new ObservableCollection<Product>();
@@ -55,12 +60,28 @@ public partial class MainWindow : Window
         LoginView.Visibility = Visibility.Collapsed;
         PointOfSaleView.Visibility = Visibility.Visible;
         SalesContentView.Visibility = Visibility.Visible;
+        SalesHistoryContentView.Visibility = Visibility.Collapsed;
         InventoryContentView.Visibility = Visibility.Collapsed;
         SettingsContentView.Visibility = Visibility.Collapsed;
         PointOfSaleButton.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(36, 87, 121));
+        SalesHistoryButton.Background = System.Windows.Media.Brushes.Transparent;
         InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
         SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
+    }
+
+    private async void SalesHistory_Click(object sender, RoutedEventArgs e)
+    {
+        SalesContentView.Visibility = Visibility.Collapsed;
+        SalesHistoryContentView.Visibility = Visibility.Visible;
+        InventoryContentView.Visibility = Visibility.Collapsed;
+        SettingsContentView.Visibility = Visibility.Collapsed;
+        PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
+        SalesHistoryButton.Background = new System.Windows.Media.SolidColorBrush(
+            System.Windows.Media.Color.FromRgb(36, 87, 121));
+        InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
+        SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
+        await RefreshSalesHistoryAsync();
     }
 
     private async void PointOfSale_Click(object sender, RoutedEventArgs e)
@@ -72,9 +93,11 @@ public partial class MainWindow : Window
     private async void Inventory_Click(object sender, RoutedEventArgs e)
     {
         SalesContentView.Visibility = Visibility.Collapsed;
+        SalesHistoryContentView.Visibility = Visibility.Collapsed;
         InventoryContentView.Visibility = Visibility.Visible;
         SettingsContentView.Visibility = Visibility.Collapsed;
         PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
+        SalesHistoryButton.Background = System.Windows.Media.Brushes.Transparent;
         InventoryButton.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(36, 87, 121));
         SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
@@ -84,9 +107,11 @@ public partial class MainWindow : Window
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
         SalesContentView.Visibility = Visibility.Collapsed;
+        SalesHistoryContentView.Visibility = Visibility.Collapsed;
         InventoryContentView.Visibility = Visibility.Collapsed;
         SettingsContentView.Visibility = Visibility.Visible;
         PointOfSaleButton.Background = System.Windows.Media.Brushes.Transparent;
+        SalesHistoryButton.Background = System.Windows.Media.Brushes.Transparent;
         InventoryButton.Background = System.Windows.Media.Brushes.Transparent;
         SettingsButton.Background = new System.Windows.Media.SolidColorBrush(
             System.Windows.Media.Color.FromRgb(36, 87, 121));
@@ -361,6 +386,26 @@ public partial class MainWindow : Window
         }
     }
 
+    private async Task RefreshSalesHistoryAsync()
+    {
+        try
+        {
+            var sales = await _salesRepository.GetAllAsync();
+            SalesHistoryList.ItemsSource = sales;
+            SalesHistoryEmptyText.Visibility = sales.Count == 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"No se pudo cargar el historial de ventas.{Environment.NewLine}{exception.Message}",
+                "Error al cargar historial",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
     private void AddToCart_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: Product product })
@@ -435,10 +480,20 @@ public partial class MainWindow : Window
         if (confirmation != MessageBoxResult.Yes)
             return;
 
-        var quantities = _cart.ToDictionary(item => item.ProductId, item => item.Quantity);
+        var sale = new Sale
+        {
+            Total = total,
+            Items = _cart.Select(item => new SaleItem
+            {
+                ProductId = item.ProductId,
+                ProductName = item.Name,
+                UnitPrice = item.UnitPrice,
+                Quantity = item.Quantity
+            }).ToList()
+        };
         try
         {
-            await _productsRepository.DeductStockAsync(quantities);
+            await _salesRepository.CompleteSaleAsync(sale);
             _cart.Clear();
             UpdateCartSummary();
             await RefreshProductsAsync();

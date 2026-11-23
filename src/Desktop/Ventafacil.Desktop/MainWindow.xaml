@@ -78,6 +78,15 @@
                                 FontWeight="SemiBold"
                                 BorderThickness="0"
                                 Click="PointOfSale_Click" />
+                        <Button Content="Historial de ventas"
+                                x:Name="SalesHistoryButton"
+                                Margin="0,8,0,0"
+                                HorizontalContentAlignment="Left"
+                                Padding="12,10"
+                                Background="Transparent"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="SalesHistory_Click" />
                         <Button Content="Inventario"
                                 x:Name="InventoryButton"
                                 Margin="0,8,0,0"
@@ -341,6 +350,90 @@
                         </Grid>
                     </Border>
                 </Grid>
+            </Grid>
+
+            <Grid x:Name="SalesHistoryContentView"
+                  Grid.Column="1"
+                  Margin="28,24"
+                  Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Historial de ventas"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#17324D" />
+                    <TextBlock Text="Consulta las ventas realizadas, sus productos, cantidades y totales"
+                               Margin="0,4,0,0"
+                               Foreground="#65758B" />
+                </StackPanel>
+
+                <Border Grid.Row="1" Padding="20" Background="White" CornerRadius="10">
+                    <Grid>
+                        <ListView x:Name="SalesHistoryList"
+                                  BorderThickness="0"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="14,12"
+                                            BorderBrush="#E7EBF0"
+                                            BorderThickness="0,0,0,1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1.1*" />
+                                                <ColumnDefinition Width="2*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding SoldAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                                       VerticalAlignment="Top"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#17324D" />
+                                            <ItemsControl Grid.Column="1" ItemsSource="{Binding Items}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Margin="0,0,12,6">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="2*" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding ProductName}"
+                                                                       TextWrapping="Wrap" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding Quantity, StringFormat=Cantidad: {0}}" />
+                                                            <TextBlock Grid.Column="2"
+                                                                       Text="{Binding LineTotal, StringFormat={}{0:C2}}"
+                                                                       HorizontalAlignment="Right" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding Total, StringFormat={}{0:C2}}"
+                                                       Margin="16,0,0,0"
+                                                       VerticalAlignment="Top"
+                                                       FontSize="17"
+                                                       FontWeight="Bold"
+                                                       Foreground="#1769AA" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock x:Name="SalesHistoryEmptyText"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="#65758B"
+                                   Text="Todavía no hay ventas registradas."
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed" />
+                    </Grid>
+                </Border>
             </Grid>
 
             <Grid x:Name="InventoryContentView"
